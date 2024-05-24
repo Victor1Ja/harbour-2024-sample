@@ -23,9 +23,9 @@ pipeline {
                                                    usernameVariable: 'myuser')]) {
                     sh 'ls -la'
 
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"if test -f /etc/systemd/system/myapp.service; then systemctl stop myapp; fi\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"if test -f /etc/systemd/system/myapp.service; then systemctl stop myapp; fi\""
 
-                    sh "scp -o StrictHostKeychecking=no -i /var/jenkins_home/.key/id_rsa main ${myuser}@192.168.56.3:"
+                    sh "scp -o StrictHostKeychecking=no -i ${mykey} main ${myuser}@192.168.56.3"
                 }
             }
         }
@@ -36,13 +36,13 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser')]) {
 
-                    sh "scp -o StrictHostKeychecking=no -i /var/jenkins_home/.key/id_rsa myapp.service ${myuser}@192.168.56.3:"
+                    sh "scp -o StrictHostKeychecking=no -i ${mykey} myapp.service ${myuser}@192.168.56.3"
 
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"sudo mv myapp.service /etc/systemd/system/\""
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"sudo systemctl daemon-reload\""
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"sudo systemctl start myapp\""
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"sudo systemctl status myapp\""
-                    sh "ssh root@192.168.56.3 -i /var/jenkins_home/.key/id_rsa \"sudo systemctl enable myapp\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"sudo mv myapp.service /etc/systemd/system/\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"sudo systemctl daemon-reload\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"sudo systemctl start myapp\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"sudo systemctl status myapp\""
+                    sh "ssh root@192.168.56.3 -i ${mykey} \"sudo systemctl enable myapp\""
                 }
             }
         }
