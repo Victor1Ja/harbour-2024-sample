@@ -7,15 +7,8 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            steps {
-                sh 'go build main.go'
-                sh 'ls -la'
-                sh 'echo "Build done!!!"'
-            }
-        }
 
-        stage('Deploy') {
+        stage('Build and Push') {
             steps {
                 sh 'echo "Deploying..."'
 
@@ -23,9 +16,12 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser')]) {
                     script {
-                        def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:1h .";
-                        def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:1h";
-                        sh(dockerPullCommand)
+                        def dockerBuildCommand = "sudo docker build -t ttl.sh/${IMAGE_NAME}:1h .";
+                        def dockerPullCommand = "sudo docker push ttl.sh/${IMAGE_NAME}:1h";
+                        def ret = sh dockerBuildCommand
+                        print(ret)
+                        def ret1 = sh(dockerPullCommand)
+                        print(ret1)
                         // sshagent(['mykey2']) {
                         //     sh """
                         //     ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
