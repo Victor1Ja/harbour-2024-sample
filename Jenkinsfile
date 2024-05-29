@@ -43,7 +43,7 @@ pipeline {
         stage('Health Check'){
             steps {
                 sh 'echo "Health Check..."'
-                sh 'curl -s 192.168.56.3:4444/health'
+                sh '/usr/bin/curl -s 192.168.56.3:4444/health'
             }
         }
     }
