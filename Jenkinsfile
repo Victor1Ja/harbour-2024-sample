@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('Build and Push') {
             steps {
                 sh 'echo "Deploying..."'
@@ -39,10 +38,9 @@ pipeline {
                         def defaultPort = "4444"
 
                         def stopContainerCommand = """CONTAINER_ID=\$(docker ps -q --filter "publish=${defaultPort}")
-                                                    if [ ! -z "\$CONTAINER_ID" ]; then
                                                         docker stop \$CONTAINER_ID
                                                         docker rm \$CONTAINER_ID
-                                                    fi"""
+                                                    """
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         def checkPortCommand = "if [!lsof -i:${defaultPort} > /dev/null]; then ${stopContainerCommand} ;fi"
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${checkPortCommand} && ${runContainerCommandDefault}\" """
