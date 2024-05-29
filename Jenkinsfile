@@ -81,8 +81,9 @@ pipeline {
                                                     fi"""
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         def checkPortCommand = "if [!lsof -i:${defaultPort} > /dev/null]; then ${stopContainerCommand} ;fi"
-                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<<${checkPortCommand} && ${runContainerCommandDefault}"""
+                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${checkPortCommand} && ${runContainerCommandDefault}\" """
                         sh(sshCommand)
+                        // sh "ssh vagrant@192.168.56.3 -i ${mykey} \"sudo mv myapp.service /etc/systemd/system/\""
                         """
                         // sshagent(['mykey2']) {
                         //     sh """
