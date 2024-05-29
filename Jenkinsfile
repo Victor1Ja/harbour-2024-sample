@@ -25,15 +25,15 @@ pipeline {
                     script {
                         def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:1h .";
                         def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:1h";
-                        print(dockerPullCommand)
-                        sshagent(['mykey2']) {
-                            sh """
-                            ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
-                                ${dockerBuildCommand}
-                                ${dockerPullCommand}
-                            EOF
-                            """
-                        }
+                        sh(dockerPullCommand)
+                        // sshagent(['mykey2']) {
+                        //     sh """
+                        //     ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
+                        //         ${dockerBuildCommand}
+                        //         ${dockerPullCommand}
+                        //     EOF
+                        //     """
+                        // }
 
 
                     }    
