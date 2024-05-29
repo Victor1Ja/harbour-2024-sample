@@ -23,7 +23,8 @@ pipeline {
                                                    usernameVariable: 'myuser')]) {
                     sh 'ls -la'
                     sh 'IMAGE_NAME=$(uuidgen)'
-                    sh 'docker push ttl.sh/${IMAGE_NAME}:1h'
+                    sh 'echo $IMAGE_NAME'
+                    sh 'docker push ttl.sh/$IMAGE_NAME:1h'
 
                     sh "ssh vagrant@192.168.56.3 -o StrictHostKeychecking=no -i ${mykey} \"docker pull ttl.sh/${IMAGE_NAME}:1h\""
                 }
