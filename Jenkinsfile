@@ -81,9 +81,11 @@ pipeline {
                                                     fi"""
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:80 --name my_container ${imageName}"
                         def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then ${stopContainerCommand} ;fi"
-                        sh(checkPortCommand)
-                        sh(runContainerCommandDefault)
-
+                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<< 'EOF'
+                                                ${checkPortCommand}
+                                                ${runContainerCommandDefault}
+                                            EOF
+                        """
                         // sshagent(['mykey2']) {
                         //     sh """
                         //     ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
