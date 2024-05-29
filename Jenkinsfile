@@ -16,8 +16,8 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser')]) {
                     script {
-                        def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:1h .";
-                        def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:1h";
+                        def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:10m .";
+                        def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:10m";
                         def ret = sh dockerBuildCommand
                         print(ret)
                         def ret1 = sh(dockerPullCommand)
@@ -37,9 +37,9 @@ pipeline {
                     // sh 'ls -la'
                     // // sh 'IMAGE_NAME=$(uuidgen)'
                     // sh 'echo ${IMAGE_NAME}'
-                    // sh 'docker push ttl.sh/${IMAGE_NAME}:1h'
+                    // sh 'docker push ttl.sh/${IMAGE_NAME}:10m'
 
-                    // sh "ssh vagrant@192.168.56.3 -o StrictHostKeychecking=no -i ${mykey} \"docker pull ttl.sh/${IMAGE_NAME}:1h\""
+                    // sh "ssh vagrant@192.168.56.3 -o StrictHostKeychecking=no -i ${mykey} \"docker pull ttl.sh/${IMAGE_NAME}:10m\""
                 }
             }
         }
@@ -71,7 +71,7 @@ pipeline {
                                                    usernameVariable: 'myuser')]) {
                     script {
                         def remoteHost = "192.168.56.3 "
-                        def imageName = "ttl.sh/${IMAGE_NAME}:1h"
+                        def imageName = "ttl.sh/${IMAGE_NAME}:10m"
                         def defaultPort = "4444"
 
                         def stopContainerCommand = """CONTAINER_ID=\$(docker ps -q --filter "publish=${defaultPort}")
