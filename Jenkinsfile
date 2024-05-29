@@ -1,10 +1,10 @@
+def IMAGE_NAME = UUID.randomUUID().toString()
 pipeline {
     agent any
 
     tools {
         go 'go-1.22'
     }
-    def IMAGE_NAME = UUID.randomUUID().toString()
 
     stages {
         stage('Build') {
