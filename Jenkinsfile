@@ -1,11 +1,6 @@
 def IMAGE_NAME = UUID.randomUUID().toString()
 pipeline {
     agent any
-
-    tools {
-        go 'go-1.22'
-    }
-
     stages {
         stage('Build and Push') {
             steps {
@@ -48,7 +43,7 @@ pipeline {
         stage('Health Check'){
             steps {
                 sh 'echo "Health Check..."'
-                sh ''' curl -s 192.168.56.3:4444/health && echo "Health Check Passed"'''
+                sh 'curl -s 192.168.56.3:4444/health'
             }
         }
     }
