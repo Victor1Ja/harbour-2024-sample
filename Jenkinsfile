@@ -37,13 +37,9 @@ pipeline {
                         def imageName = "ttl.sh/${IMAGE_NAME}:10m"
                         def defaultPort = "4444"
 
-                        def stopContainerCommand = """
-                                                        docker stop my_container
-                                                        docker rm my_container
-                                                    """
+                        def stopContainerCommand = """docker stop my_container && docker rm my_container"""
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
-                        def checkPortCommand = "if [!lsof -i:${defaultPort} > /dev/null]; then ${stopContainerCommand} ;fi"
-                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${checkPortCommand} && ${runContainerCommandDefault}\" """
+                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${stopContainerCommand} && ${runContainerCommandDefault}\" """
                         sh(sshCommand)
                     }
                 }
