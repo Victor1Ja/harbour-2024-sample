@@ -22,12 +22,28 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'mykey2',
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser')]) {
-                    sh 'ls -la'
-                    // sh 'IMAGE_NAME=$(uuidgen)'
-                    sh 'echo ${IMAGE_NAME}'
-                    sh 'docker push ttl.sh/${IMAGE_NAME}:1h'
+                    script {
+                        def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:1h .";
+                        def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:1h";
+                        print(dockerPullCommand)
+                        sshagent(['mykey2']) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
+                                ${dockerBuildCommand}
+                                ${dockerPullCommand}
+                            EOF
+                            """
+                        }
 
-                    sh "ssh vagrant@192.168.56.3 -o StrictHostKeychecking=no -i ${mykey} \"docker pull ttl.sh/${IMAGE_NAME}:1h\""
+
+                    }    
+                    
+                    // sh 'ls -la'
+                    // // sh 'IMAGE_NAME=$(uuidgen)'
+                    // sh 'echo ${IMAGE_NAME}'
+                    // sh 'docker push ttl.sh/${IMAGE_NAME}:1h'
+
+                    // sh "ssh vagrant@192.168.56.3 -o StrictHostKeychecking=no -i ${mykey} \"docker pull ttl.sh/${IMAGE_NAME}:1h\""
                 }
             }
         }
