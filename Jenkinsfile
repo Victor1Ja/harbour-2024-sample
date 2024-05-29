@@ -72,14 +72,14 @@ pipeline {
                     script {
                         def remoteHost = "192.168.56.3 "
                         def imageName = "ttl.sh/${IMAGE_NAME}:1h"
-                        def defaultPort = "8080"
+                        def defaultPort = "4444"
 
                         def stopContainerCommand = """CONTAINER_ID=\$(docker ps -q --filter "publish=${defaultPort}")
                                                     if [ ! -z "\$CONTAINER_ID" ]; then
                                                         docker stop \$CONTAINER_ID
                                                         docker rm \$CONTAINER_ID
                                                     fi"""
-                        def runContainerCommandDefault = "docker run -d -p ${defaultPort}:8080 --name my_container ${imageName}"
+                        def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then ${stopContainerCommand} ;fi"
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<< 'EOF'
                                                 ${checkPortCommand}

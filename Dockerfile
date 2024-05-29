@@ -17,4 +17,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run app.py when the container launches
-CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "4444"]
