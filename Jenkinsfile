@@ -16,8 +16,8 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser')]) {
                     script {
-                        def dockerBuildCommand = "sudo docker build -t ttl.sh/${IMAGE_NAME}:1h .";
-                        def dockerPullCommand = "sudo docker push ttl.sh/${IMAGE_NAME}:1h";
+                        def dockerBuildCommand = "docker build -t ttl.sh/${IMAGE_NAME}:1h .";
+                        def dockerPullCommand = "docker push ttl.sh/${IMAGE_NAME}:1h";
                         def ret = sh dockerBuildCommand
                         print(ret)
                         def ret1 = sh(dockerPullCommand)
