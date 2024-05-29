@@ -85,6 +85,8 @@ pipeline {
                                                 ${checkPortCommand}
                                                 ${runContainerCommandDefault}
                                             EOF
+                                            """
+                        sh(sshCommand)
                         """
                         // sshagent(['mykey2']) {
                         //     sh """
