@@ -37,9 +37,9 @@ pipeline {
                         def imageName = "ttl.sh/${IMAGE_NAME}:10m"
                         def defaultPort = "4444"
 
-                        def stopContainerCommand = """CONTAINER_ID=\$(docker ps -q --filter "publish=${defaultPort}")
-                                                        docker stop \$CONTAINER_ID
-                                                        docker rm \$CONTAINER_ID
+                        def stopContainerCommand = """
+                                                        docker stop my_container
+                                                        docker rm my_container
                                                     """
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         def checkPortCommand = "if [!lsof -i:${defaultPort} > /dev/null]; then ${stopContainerCommand} ;fi"
