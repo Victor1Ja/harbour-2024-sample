@@ -63,7 +63,7 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Run as a service') {
+        stage('Pull and Run as a service') {
             steps {
                 sh 'echo "Running as a service..."'
                 withCredentials([sshUserPrivateKey(credentialsId: 'mykey2',
@@ -81,11 +81,7 @@ pipeline {
                                                     fi"""
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then ${stopContainerCommand} ;fi"
-                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<< 'EOF'
-                                                ${checkPortCommand}
-                                                ${runContainerCommandDefault}
-                                            EOF
-                                            """
+                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<<${checkPortCommand} &&${runContainerCommandDefault}"""
                         sh(sshCommand)
                         """
                         // sshagent(['mykey2']) {
