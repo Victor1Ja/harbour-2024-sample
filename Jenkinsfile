@@ -79,7 +79,7 @@ pipeline {
                                                         docker stop \$CONTAINER_ID
                                                         docker rm \$CONTAINER_ID
                                                     fi"""
-                        def runContainerCommandDefault = "docker run -d -p ${defaultPort}:80 --name my_container ${imageName}"
+                        def runContainerCommandDefault = "docker run -d -p ${defaultPort}:8080 --name my_container ${imageName}"
                         def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then ${stopContainerCommand} ;fi"
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost}<< 'EOF'
                                                 ${checkPortCommand}
