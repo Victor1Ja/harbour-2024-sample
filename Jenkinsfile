@@ -74,27 +74,29 @@ pipeline {
                         def imageName = "ttl.sh/${IMAGE_NAME}:1h"
                         def defaultPort = "8080"
 
-                        def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then exit 0; else exit 1; fi"
                         def stopContainerCommand = """CONTAINER_ID=\$(docker ps -q --filter "publish=${defaultPort}")
                                                     if [ ! -z "\$CONTAINER_ID" ]; then
                                                         docker stop \$CONTAINER_ID
                                                         docker rm \$CONTAINER_ID
                                                     fi"""
                         def runContainerCommandDefault = "docker run -d -p ${defaultPort}:80 --name my_container ${imageName}"
+                        def checkPortCommand = "if ! lsof -i:${defaultPort} > /dev/null; then ${stopContainerCommand} ; else exit 1; fi"
+                        sh(checkPortCommand)
+                        sh(runContainerCommandDefault)
 
-                        sshagent(['mykey2']) {
-                            sh """
-                            ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
-                                ${checkPortCommand}
-                                if [ \$? -eq 0 ]; then
-                                    ${runContainerCommandDefault}
-                                else
-                                    ${stopContainerCommand}
-                                    ${runContainerCommandDefault}
-                                fi
-                            EOF
-                            """
-                        }
+                        // sshagent(['mykey2']) {
+                        //     sh """
+                        //     ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} << 'EOF'
+                        //         ${checkPortCommand}
+                        //         if [ \$? -eq 0 ]; then
+                        //             ${runContainerCommandDefault}
+                        //         else
+                        //             ${stopContainerCommand}
+                        //             ${runContainerCommandDefault}
+                        //         fi
+                        //     EOF
+                        //     """
+                        // }
                     }
                 }
             }
