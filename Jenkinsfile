@@ -42,11 +42,5 @@ pipeline {
                 }
             }
         }
-        stage('Health Check'){
-            steps {
-                sh 'echo "Health Check..."'
-                sh '/usr/bin/curl -s 192.168.56.4:4444/health'
-            }
-        }
     }
 }
