@@ -33,10 +33,9 @@ pipeline {
                         def defaultPort = "4444"
 
                         sh "scp -o StrictHostKeychecking=no -i ${mykey} deployment.yaml ${myuser}@192.168.56.4:"
-                        // def stopContainerCommand = """docker stop my_container && docker rm my_container"""
-                        // def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
-                        // def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${stopContainerCommand} && ${runContainerCommandDefault}\" """
-                        def sh = """kind get kubeconfig --name my-cluster > kubeconfig && export KUBECONFIG=kubeconfig && kubectl apply -f deployment.yaml"""
+                        def shCreateCluester = """kind create cluster"""
+                        def sh = """kubectl apply -f deployment.yaml"""
+                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${shCreateCluester}\" """
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}\" """
                         sh(sshCommand)
                     }
