@@ -35,9 +35,10 @@ pipeline {
                         sh "scp -o StrictHostKeychecking=no -i ${mykey} deployment.yaml ${myuser}@192.168.56.4:"
                         def shCreateCluester = """kind create cluster"""
                         def sh = """kubectl apply -f deployment.yaml"""
-                        def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${shCreateCluester}\" """
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}\" """
+                        def sshCommand1 = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${shCreateCluester}\" """
                         sh(sshCommand)
+                        sh(sshCommand1)
                     }
                 }
             }
