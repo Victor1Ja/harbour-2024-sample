@@ -37,9 +37,7 @@ pipeline {
                         // def runContainerCommandDefault = "docker run -d -p ${defaultPort}:${defaultPort} --name my_container ${imageName}"
                         // def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${stopContainerCommand} && ${runContainerCommandDefault}\" """
                         def sh = """
-                        kind get kubeconfig --name my-cluster > kubeconfig
-                        export KUBECONFIG=kubeconfig
-                        kubectl apply -f deployment.yaml
+                        kind get kubeconfig --name my-cluster > kubeconfig && export KUBECONFIG=kubeconfig && kubectl apply -f deployment.yaml
                         """
                         def sshCommand = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}\" """
                         sh(sshCommand)
