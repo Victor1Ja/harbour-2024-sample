@@ -32,6 +32,7 @@ pipeline {
                         def imageName = "ttl.sh/${IMAGE_NAME}:10m"
                         def defaultPort = "4444"
 
+                        sh "scp -o StrictHostKeychecking=no -i ${mykey} kind.yaml ${myuser}@192.168.56.4:"
                         sh "scp -o StrictHostKeychecking=no -i ${mykey} deployment.yaml ${myuser}@192.168.56.4:"
                         def shCreateCluester = """kind create cluster"""
                         def sh = """kubectl apply -f deployment.yaml"""
