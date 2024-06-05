@@ -54,9 +54,13 @@ pipeline {
                         def remoteHost = "${ec2Host}"
                         print remoteHost
                         def installEnv = "python3 -m venv .env"
+                        print installEnv
                         def activateEnv = "source .env/bin/activate"
+                        print activateEnv
                         def installDependencies = "pip install -r requirements.txt"
+                        print installDependencies
                         def runApp = "fastapi run mayn.py"
+                        print runApp
                         def sshCommand2 = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
                         print "Deploying on ec2......"
                         sh sshCommand2
