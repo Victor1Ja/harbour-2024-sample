@@ -61,9 +61,10 @@ pipeline {
                         print installDependencies
                         def runApp = "fastapi run mayn.py"
                         print runApp
-                        def sshCommand2 = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        print command
                         print "Deploying on ec2......"
-                        sh sshCommand2
+                        sh command
                     }
                 }
                 sh 'echo "Deployed on ec2..."'
