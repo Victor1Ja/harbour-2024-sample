@@ -51,7 +51,8 @@ pipeline {
                                 string(credentialsId: 'ec2Host', variable: 'ec2Host')]){
                     script {
                         print ec2Host
-                        def remoteHost = ec2Host
+                        def remoteHost = "${ec2Host}"
+                        print remoteHost
                         def installEnv = "python3 -m venv .env"
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
