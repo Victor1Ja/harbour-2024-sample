@@ -58,9 +58,12 @@ pipeline {
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
                         def runApp = "fastapi run mayn.py"
-                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneRepo}&&${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        def cloneOrPull = "if [ -d \"harbour-2024-sample\" ]; then cd harbour-2024-sample && git pull; else ${cloneRepo}; fi"
+                        def commandClone = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneOrPull}\" """
+                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
                         print command
                         print "Deploying on ec2......"
+                        sh commandClone
                         sh command
                     }
                 }
