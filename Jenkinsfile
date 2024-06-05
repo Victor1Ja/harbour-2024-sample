@@ -40,8 +40,6 @@ pipeline {
                 }
             }
         }
-    }
-    stages{
         stage('Deploy on ec2'){
             steps{
                 sh 'echo "Deploying on ec2..."'
