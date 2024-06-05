@@ -52,16 +52,13 @@ pipeline {
                     script {
                         print ec2Host
                         def remoteHost = "${ec2Host}"
-                        print remoteHost
+                        def cloneRepo = "git clone https://github.com/Victor1Ja/harbour-2024-sample.git"
+                        def changeDir = "cd harbour-2024-sample"
                         def installEnv = "python3 -m venv .env"
-                        print installEnv
                         def activateEnv = "source .env/bin/activate"
-                        print activateEnv
                         def installDependencies = "pip install -r requirements.txt"
-                        print installDependencies
                         def runApp = "fastapi run mayn.py"
-                        print runApp
-                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneRepo}&&${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
                         print command
                         print "Deploying on ec2......"
                         sh command
