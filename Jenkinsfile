@@ -48,9 +48,10 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser'
                                                    ),
-                                string(credentialsId: 'ec2Host', secretVariable: 'ec2Host') ]){
+                                string(credentialsId: 'ec2Host', variable: 'ec2Host') ]){
                     script {
-                        def remoteHost = "http://ec2-3-70-224-86.eu-central-1.compute.amazonaws.com"
+                        print ec2Host
+                        def remoteHost = ec2Host
                         def installEnv = "python3 -m venv .env"
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
