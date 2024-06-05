@@ -57,7 +57,7 @@ pipeline {
                         def installEnv = "python3 -m venv .env"
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
-                        def runApp = "fastapi run mayn.py"
+                        def runApp = "fastapi run main.py"
                         def cloneOrPull = "if [ -d \"harbour-2024-sample\" ]; then cd harbour-2024-sample && git pull; else ${cloneRepo}; fi"
                         def commandClone = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneOrPull}\" """
                         def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
