@@ -57,6 +57,7 @@ pipeline {
                         def installDependencies = "pip install -r requirements.txt"
                         def runApp = "fastapi run mayn.py"
                         def sshCommand2 = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        sh(sshCommand2)
                     }
                 }
             }
