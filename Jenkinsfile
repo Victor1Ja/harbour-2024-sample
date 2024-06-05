@@ -48,17 +48,17 @@ pipeline {
                                                    keyFileVariable: 'mykey',
                                                    usernameVariable: 'myuser'
                                                    ),
-                                string(credentialsId: 'ec2Host', variable: 'ec2Host') ]){
+                                string(credentialsId: 'ec2Host', variable: 'ec2Host')]){
                     script {
                         print ec2Host
-                        print "Deploying on ec2..."
                         def remoteHost = ec2Host
                         def installEnv = "python3 -m venv .env"
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
                         def runApp = "fastapi run mayn.py"
                         def sshCommand2 = """ssh -o StrictHostKeyChecking=no -i ${mykey} ${myuser}@${remoteHost} \"${sh}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
-                        sh(sshCommand2)
+                        print "Deploying on ec2..."
+                        sh sshCommand2
                     }
                 }
                 sh 'echo "Deployed on ec2..."'
