@@ -1,11 +1,7 @@
-# Go application for Harbour.Space DevOps course
+Deploy on ec2
 
-This is a simple Go application that responds to a HTTP GET request with a JSON response.
+I use the service approach because the ec2 instance is quite small and docker can be heavy for it.
+It was hard because I had to create a service that run the fastapi app instead of just running the app.
+Because if I just run the app, the app will be attached to the terminal and if the terminal is closed the app will be closed too.
 
-## Build stages
-
-- Build: This stage compiles the Go application and generates a binary `main`.
-
-- Deploy: This stage stops the service in the `target` machine if it exists, and copies the binary to the `target` machine.
-
-- Run as service: This stage starts the service in the `target` machine and enables it, so it starts on boot, guaranteeing that the API still responds even if the `target` machine is restarted.
+This was fun, but definitely not the best way to deploy a fastapi app.
