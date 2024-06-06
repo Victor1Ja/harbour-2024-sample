@@ -57,10 +57,13 @@ pipeline {
                         def installEnv = "python3 -m venv .env"
                         def activateEnv = "source .env/bin/activate"
                         def installDependencies = "pip install -r requirements.txt"
-                        def runApp = "fastapi run main.py"
+                        def copyService = "cp service /etc/systemd/system/harbour-2024-sample.service"
+                        def startService = "systemctl start harbour-2024-sample"
+                        def stopIfRunning = "systemctl stop harbour-2024-sample"
                         def cloneOrPull = "if [ -d \"harbour-2024-sample\" ]; then cd harbour-2024-sample && git pull; else ${cloneRepo}; fi"
                         def commandClone = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneOrPull}\" """
-                        def command = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}&&${runApp}\" """
+                        def commandInstall = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}\" """
+                        def commandCopyAndRun = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${copyService}&&${stopIfRunning}&&${startService}\" """
                         print command
                         print "Deploying on ec2......"
                         sh commandClone

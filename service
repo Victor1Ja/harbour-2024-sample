@@ -1,0 +1,13 @@
+[Unit]
+Description=FastAPI Server
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ubuntu
+ExecStart=/bin/bash -c 'source /home/ubuntu/harbour-2024-sample/.venv/bin/activate && fastapi run /home/ubuntu/harbour-2024-sample/main.py'
+
+[Install]
+WantedBy=multi-user.target
