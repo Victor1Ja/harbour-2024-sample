@@ -5,3 +5,8 @@ It was hard because I had to create a service that run the fastapi app instead o
 Because if I just run the app, the app will be attached to the terminal and if the terminal is closed the app will be closed too.
 
 This was fun, but definitely not the best way to deploy a fastapi app.
+
+instance is running on [here](http://ec2-3-70-224-86.eu-central-1.compute.amazonaws.com:8000/hello)
+
+![alt text](image.png)
+
