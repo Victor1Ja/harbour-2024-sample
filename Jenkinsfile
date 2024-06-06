@@ -64,10 +64,10 @@ pipeline {
                         def commandClone = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${cloneOrPull}\" """
                         def commandInstall = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${changeDir}&&${installEnv}&&${activateEnv}&&${installDependencies}\" """
                         def commandCopyAndRun = """ssh -o StrictHostKeyChecking=no -i ${mykey} ubuntu@${remoteHost} \"${copyService}&&${stopIfRunning}&&${startService}\" """
-                        print command
                         print "Deploying on ec2......"
                         sh commandClone
-                        sh command
+                        sh commandInstall
+                        sh commandCopyAndRun
                     }
                 }
                 sh 'echo "Deployed on ec2..."'
