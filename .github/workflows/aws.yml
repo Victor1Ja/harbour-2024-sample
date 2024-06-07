@@ -1,0 +1,42 @@
+name: Build and deploy  app to AWS
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build -t ttl.sh/my-image-name:10m . -f Dockerfile.prod
+
+      - name: Push to ttl.sh
+        run: docker push ttl.sh/my-image-name:10m
+
+      - name: Install SSH client
+        run: sudo apt-get install -y openssh-client
+
+      - name: Copy SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to staging server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          
+          EOF
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Remove SSH Key
+        run: |
+          rm -f ~/.ssh/id_rsa
