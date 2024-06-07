@@ -26,7 +26,8 @@ jobs:
       - name: Deploy to staging server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            if [ -d \"harbour-2024-sample\" ]; then cd harbour-2024-sample && git pull; else git clone https://github.com/Victor1Ja/harbour-2024-sample.git && cd harbour-2024-sample ; fi
+            git clone https://github.com/Victor1Ja/harbour-2024-sample.git || 0
+            cd harbour-2024-sample
             python3 -m venv .env
             source .env/bin/activate
             pip install -r requirements.txt
