@@ -31,10 +31,10 @@ jobs:
             python3 -m venv .env
             source .env/bin/activate
             pip install -r requirements.txt
-            sudo systemctl stop harbour-2024-sample || 1
-            sudo cp service /etc/systemd/system/harbour-2024-sample.service
-            sudo systemctl daemon-reload
-            sudo systemctl enable harbour-2024-sample
+            sudo systemctl stop harbour-2024-sample || echo "Service not running"
+            sudo cp service /etc/systemd/system/harbour-2024-sample.service && echo "Service file copied"
+            sudo systemctl daemon-reload && echo "Daemon reloaded"
+            sudo systemctl enable harbour-2024-sample && echo "Service enabled"
           EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
