@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the Docker image
-        run: docker build -t ttl.sh/my-image-name:10m . -f Dockerfile.prod
+        run: docker build -t ttl.sh/my-image-name:10m .
 
       - name: Push to ttl.sh
         run: docker push ttl.sh/my-image-name:10m
