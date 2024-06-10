@@ -1,0 +1,44 @@
+name: Build and deploy  app to AWS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SSH client
+        run: sudo apt-get install -y openssh-client
+
+      - name: Copy SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to staging server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            git clone https://github.com/Victor1Ja/harbour-2024-sample.git || 0
+            cd harbour-2024-sample
+            python3 -m venv .env
+            source .env/bin/activate
+            pip install -r requirements.txt
+            sudo systemctl stop harbour-2024-sample || echo "Service not running"
+            sudo cp service /etc/systemd/system/harbour-2024-sample.service && echo "Service file copied"
+            sudo systemctl daemon-reload && echo "Daemon reloaded"
+            sudo systemctl enable harbour-2024-sample && echo "Service enabled"
+          EOF
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Remove SSH Key
+        run: |
+          rm -f ~/.ssh/id_rsa
