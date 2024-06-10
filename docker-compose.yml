@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_URL=mysql+pymysql://user:password@db/dbname
+    networks:
+      - my_network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dbname
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - my_network
+  third_party_service:
+    image: igorsakhankov/harbour-cloudcomputing
+    container_name: third_party_service
+    ports:
+      - "8181:8080"
+    networks:
+      - my_network
+
+volumes:
+  db_data:
+
+networks:
+  my_network:
