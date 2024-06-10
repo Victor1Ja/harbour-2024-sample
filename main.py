@@ -72,6 +72,34 @@ class TransactionP(TransactionBase):
     class Config:
         from_attributes = True
         
+        
+# * Uplink API class
+from uplink import Consumer, post, json, Body
+
+#* Transaction External Service
+
+#* TES Pydantic Models
+# {
+#   "amount": 78,
+#   "currency": "thunder",
+#   "description": "thunder",
+#   "userId": "thunder"
+# }
+class TESTransaction(Body):
+    amount: int
+    currency: str
+    description: str
+    userId: str
+    
+class TES(Consumer):
+    @json 
+    @post("/v1/wallet/transaction")
+    def create_transaction(self, transaction: TESTransaction):
+        """ Create a transaction """
+
+tes_api = TES(base_url = "http://localhost:8181")
+
+        
 #* Controllers
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -121,6 +149,15 @@ async def hello_world():
 @app.post("/store_money")
 async def store_money(amount: int, courier_id: int, db: Session = Depends(get_db)):
     courier = get_courier(db, courier_id)
+    response_tes = tes_api.create_transaction({
+        "amount": amount,
+        "currency": "USD",
+        "description": "Super White transaction",
+        "userId": courier.id
+    })
+    if response_tes.status_code != 200:
+        return {"message": "Error in transaction"}
+    create_transaction(TransactionBase(amount=amount),courier_id,db)
     courier.money += amount
     db.commit()
     return {"message": "Money stored successfully"}
