@@ -1,3 +1,6 @@
+from asyncio import sleep
+import asyncio
+import random
 from fastapi import FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +8,7 @@ from dotenv import load_dotenv
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, declarative_base
 from pydantic import BaseModel
-from uplink import Consumer, post, json, Body
+from uplink import Consumer, post, json, Body, timeout
 import os
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -90,13 +93,7 @@ class TransactionP(TransactionBase):
 # * Transaction External Service
 
 
-# * TES Pydantic Models
-# {
-#   "amount": 78,
-#   "currency": "thunder",
-#   "description": "thunder",
-#   "userId": "thunder"
-# }
+# * TES Pydantic Models and Uplink API
 class TESTransaction(Body):
     amount: int
     currency: str
@@ -104,6 +101,8 @@ class TESTransaction(Body):
     userId: str
 
 
+# Transaction External Service API with Uplink and 60s timeout
+@timeout(5)
 class TES(Consumer):
     @json
     @post("/v1/wallet/transaction")
@@ -111,7 +110,43 @@ class TES(Consumer):
         """Create a transaction"""
 
 
-tes_api = TES(base_url="http://localhost:8181")
+class TESCircuitBreaker(TES):
+    def __init__(self, base_url):
+        super().__init__(base_url=base_url)
+        self.is_open = False
+
+    def sleep_with_jitter(self, sleep_time):
+        jitter = random.randint(0, sleep_time) / 10
+        sleep(sleep_time + jitter)
+
+    def open_circuit(self, sleep_time=60):
+        self.is_open = True
+        self.sleep_with_jitter(sleep_time)
+        self.is_open = False
+
+    # Post Transaction with retries and exponential backoff with jitter
+    def create_transaction(self, transaction: TESTransaction, retries=3):
+        if self.is_open:
+            return {"message": "Circuit is open"}
+        try:
+            response = super().create_transaction(transaction)
+            if response.status_code != 200:
+                return {"message": "Error in transaction"}
+            return response
+        except Exception as e:
+            if retries == 0:
+                asyncio.create_task(self.open_circuit())
+                return {
+                    "message": "Error in transaction and circuit is open for 60s",
+                    "error": str(e),
+                }
+
+            sleep_time = 2 ** (3 - retries)
+            self.sleep_with_jitter(sleep_time)
+            return self.create_transaction(transaction, retries - 1)
+
+
+tes_api = TESCircuitBreaker(base_url="http://localhost:8181")
 
 
 # * Controllers
