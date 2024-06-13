@@ -10,8 +10,10 @@ from sqlalchemy.orm import relationship, declarative_base
 from pydantic import BaseModel
 from uplink import Consumer, post, json, Body, timeout
 import os
+from contextlib import asynccontextmanager
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
+import uvicorn
 # TODO separate stuff into different files
 
 
@@ -89,6 +91,30 @@ class TransactionP(TransactionBase):
 
 
 # * Uplink API class
+
+
+# Service model
+class Service(Body):
+    name: str
+    url: str
+    weight: int = 1
+
+
+this_service = {
+    "name": "wallet",
+    "url": f"http://localhost:{os.getenv('PORT')}",
+    "weight": 1,
+}
+
+
+class LoadBalancer(Consumer):
+    @json
+    @post("/register_service")
+    def register_service(self, service: Service):
+        """Register a service"""
+
+
+load_balancer_api = LoadBalancer(base_url=os.getenv("LOAD_BALANCER_URL"))
 
 # * Transaction External Service
 
@@ -187,9 +213,20 @@ def create_transaction(
 
 
 # * FastAPI App
+def register_service():
+    res = load_balancer_api.register_service(this_service)
+    print(res.content)
 
-app = FastAPI()
-init_db()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    register_service()
+    init_db()
+    yield
+    return
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 # * Routes
@@ -227,6 +264,18 @@ async def withdraw_money(amount: int, courier_id: int, db: Session = Depends(get
     courier = get_courier(db, courier_id)
     if courier.money < amount:
         return {"message": "Not enough money"}
+
+    response_tes = tes_api.create_transaction(
+        {
+            "amount": -amount,
+            "currency": "USD",
+            "description": "Super White transaction",
+            "userId": courier.id,
+        }
+    )
+    if response_tes.status_code != 200:
+        return {"message": "Error in transaction"}
+    create_transaction(TransactionBase(amount=-amount), courier_id, db)
     courier.money -= amount
     db.commit()
     return {"message": "Money withdrawn successfully"}

@@ -3,6 +3,7 @@
         "dotenv",
         "pydantic",
         "sessionmaker",
-        "sqlalchemy"
+        "sqlalchemy",
+        "uvicorn"
     ]
 }
