@@ -1,18 +1,41 @@
 version: '3.8'
 
 services:
-  fastapi_app:
+  app_1:
     build:
       context: ./app
       dockerfile: Dockerfile
-    container_name: fastapi_app
-    ports:
-      - "8000:8000"
+    container_name: fastapi_app_1
     depends_on:
       - db
       - load_balancer
     environment:
       - DB_URL=mysql+pymysql://user:password@db/dbname
+      - PORT=8000
+      - SERVICE_NAME=fastapi_app_1
+      - TES_URL=third_party_service:8080
+      - LOAD_BALANCER_URL=load_balancer:8000
+
+    ports:
+      - "8000:8000"
+    networks:
+      - my_network
+  app_2:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: fastapi_app_2
+    depends_on:
+      - db
+      - load_balancer
+    environment:
+      - DB_URL=mysql+pymysql://user:password@db/dbname
+      - PORT=8001
+      - SERVICE_NAME=fastapi_app_2
+      - TES_URL=third_party_service:8080
+      - LOAD_BALANCER_URL=load_balancer:8000
+    ports:
+      - "8001:8000"
     networks:
       - my_network
   load_balancer:
@@ -20,10 +43,14 @@ services:
       context: ./load_balancer
       dockerfile: Dockerfile
     container_name: load_balancer
+    environment:
+      - REDIS_HOST=redis
     ports:
-      - "80:80"
+      - "8080:8000"
     networks:
       - my_network
+    depends_on:
+      - redis
   redis:
     image: redis:6.0
     container_name: redis

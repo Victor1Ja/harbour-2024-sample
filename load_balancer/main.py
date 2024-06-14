@@ -1,19 +1,21 @@
 import asyncio
 import random
-import time
 import redis
 import requests
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.background import BackgroundTasks
-from fastapi.responses import Response, RedirectResponse
+from fastapi.responses import RedirectResponse
 from typing import List, Dict, Any
 from pydantic import BaseModel
-import uvicorn
 from contextlib import asynccontextmanager
 from urllib.parse import urljoin
+import os
 
+
+print(f"REDIS_HOST: {os.getenv('REDIS_HOST', 'localhost')}")
 # Connect to Redis
-redis_client = redis.StrictRedis(host="localhost", port=6379, db=0)
+redis_client = redis.StrictRedis(
+    host=os.getenv("REDIS_HOST", "localhost"), port=6379, db=0
+)
 
 
 # Service model
@@ -21,6 +23,7 @@ class Service(BaseModel):
     name: str
     url: str
     weight: int = 1
+    inside_url: str = None
 
 
 @asynccontextmanager
@@ -80,7 +83,7 @@ async def health_check():
         print("Health check")
         for service in services:
             try:
-                response = requests.get(f"{service['url']}/health")
+                response = requests.get(f"{service['inside_url']}/health")
                 if response.status_code != 200:
                     services.remove(service)
             except requests.exceptions.RequestException:
@@ -121,7 +124,3 @@ async def load_balancer_middleware(request: Request, call_next):
     url = urljoin(chosen_service["url"], request.url.path)
 
     return RedirectResponse(url=url, status_code=307)
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
